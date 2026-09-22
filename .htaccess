@@ -3,6 +3,12 @@
 
 RewriteEngine On
 
+# Force https://www.stowflex.com (matches every canonical tag on the site).
+# Update the domain here if it's ever different from stowflex.com.
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} !^www\.stowflex\.com$ [NC]
+RewriteRule ^ https://www.stowflex.com%{REQUEST_URI} [R=301,L]
+
 # /index.html -> /
 RewriteCond %{THE_REQUEST} \s/+index\.html[\s?] [NC]
 RewriteRule ^ /? [R=301,L]
