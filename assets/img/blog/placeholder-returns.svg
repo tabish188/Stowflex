@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+<defs>
+<linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#1d2460"/>
+<stop offset="1" stop-color="#0058be"/>
+</linearGradient>
+</defs>
+<rect width="1200" height="630" fill="url(#g3)"/>
+<g stroke="#6ffbbe" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(500,190)">
+<path d="M0 60 90 0 180 60 180 220 0 220Z" opacity="0.9"/>
+<path d="M0 60 90 120 180 60"/>
+<path d="M90 120 90 220"/>
+</g>
+<g stroke="#ffffff" stroke-width="8" fill="none" stroke-linecap="round" transform="translate(300,300)">
+<path d="M0 0a40 40 0 1 0 40-40" />
+<path d="M0 0 0 -20 -20 -10Z" fill="#ffffff" stroke="none"/>
+</g>
+<text x="80" y="560" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#ffffff">StowFlex &#183; Returns</text>
+</svg>

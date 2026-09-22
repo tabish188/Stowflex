@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StowFlex Blog Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="preload" href="../assets/fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/css/style.min.css?v=33">
+<link rel="stylesheet" href="admin.css?v=1">
+</head>
+<body class="adm">
+
+<!-- ============ Login ============ -->
+<div id="login" class="adm-login">
+  <div class="adm-login-topbar">
+    <img src="../assets/img/logo.png" alt="StowFlex" width="132" height="39">
+  </div>
+  <div class="adm-login-wrap">
+    <span class="adm-eyebrow">Admin Access</span>
+    <h1>Blog Admin</h1>
+    <p class="adm-login-sub">Sign in to write, publish and manage everything on the StowFlex blog &mdash; content, images, internal links and SEO.</p>
+    <form id="login-form" class="adm-login-card" autocomplete="on">
+      <label for="login-id">ID</label>
+      <input id="login-id" name="username" type="text" autocomplete="username" required autofocus>
+      <label for="login-pass">Password</label>
+      <input id="login-pass" name="password" type="password" autocomplete="current-password" required>
+      <p id="login-error" class="adm-error" role="alert" hidden></p>
+      <button class="adm-btn primary block" type="submit" id="login-submit">Sign in</button>
+      <details id="conn-details" class="adm-conn">
+        <summary>Connection settings</summary>
+        <label for="conn-url">Supabase project URL</label>
+        <input id="conn-url" type="url" placeholder="https://xxxx.supabase.co">
+        <label for="conn-key">Supabase anon key</label>
+        <input id="conn-key" type="text" placeholder="eyJ...">
+        <p class="muted small">Saved in this browser only. Or set them once in <code>admin/config.js</code>.</p>
+      </details>
+    </form>
+  </div>
+</div>
+
+<!-- ============ App ============ -->
+<div id="app" hidden>
+  <header class="adm-top">
+    <a class="adm-brand" href="/admin/"><img src="../assets/img/logo.png" alt="StowFlex" width="110" height="32"><span>Blog Admin</span></a>
+    <div class="adm-top-actions">
+      <button class="adm-btn primary" id="btn-new" type="button">+ New post</button>
+      <button class="adm-btn ghost" id="btn-logout" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <div class="adm-layout" id="layout" data-view="list">
+    <aside class="adm-side" id="side">
+      <input id="search" type="search" placeholder="Search posts" aria-label="Search posts">
+      <div class="adm-chips" role="tablist" aria-label="Filter posts">
+        <button class="chip is-active" data-filter="all" type="button">All</button>
+        <button class="chip" data-filter="published" type="button">Published</button>
+        <button class="chip" data-filter="draft" type="button">Drafts</button>
+      </div>
+      <ul id="post-list" class="adm-list"></ul>
+      <p id="list-empty" class="muted small" hidden>No posts yet. Click "New post".</p>
+    </aside>
+
+    <main class="adm-main" id="main">
+      <div id="empty-state" class="adm-empty">
+        <h2>Select a post or start a new one</h2>
+        <p class="muted">Posts you publish here appear on the live blog immediately &mdash; no rebuild, no waiting.</p>
+      </div>
+
+      <form id="editor" hidden novalidate>
+        <div class="adm-editor-head">
+          <button type="button" class="adm-btn ghost adm-back" id="btn-back">&larr; All posts</button>
+          <span id="status-badge" class="badge">Draft</span>
+          <span id="dirty" class="muted small" hidden>Unsaved changes</span>
+        </div>
+
+        <div class="adm-tabs" role="tablist">
+          <button type="button" class="tab is-active" data-tab="content" role="tab">Content</button>
+          <button type="button" class="tab" data-tab="seo" role="tab">SEO <span id="seo-score" class="score">0</span></button>
+          <button type="button" class="tab" data-tab="preview" role="tab">Preview</button>
+        </div>
+
+        <!-- Content -->
+        <section class="pane" data-pane="content">
+          <div class="field"><label for="f-title">Title</label>
+            <input id="f-title" type="text" maxlength="150" required></div>
+
+          <div class="field"><label for="f-slug">URL slug <span class="muted small" id="slug-url"></span></label>
+            <input id="f-slug" type="text" spellcheck="false" required>
+            <p class="hint" id="slug-hint">Lowercase letters, numbers and hyphens only.</p></div>
+
+          <div class="field"><label for="f-excerpt">Excerpt <span class="counter" id="excerpt-count"></span></label>
+            <textarea id="f-excerpt" rows="3" maxlength="300"></textarea>
+            <p class="hint">Shown on the blog listing and used as the meta description if you don't set one.</p></div>
+
+          <div class="grid2">
+            <div class="field"><label for="f-category">Category</label>
+              <input id="f-category" list="cat-list" type="text" placeholder="Warehousing"><datalist id="cat-list"></datalist></div>
+            <div class="field"><label for="f-tags">Tags <span class="muted small">comma separated</span></label>
+              <input id="f-tags" type="text" placeholder="warehousing, cost-optimization"></div>
+            <div class="field"><label for="f-author">Author</label>
+              <input id="f-author" type="text"></div>
+            <div class="field"><label for="f-date">Publish date</label>
+              <input id="f-date" type="date"></div>
+          </div>
+
+          <div class="field"><label for="f-image">Cover image</label>
+            <div class="img-row">
+              <input id="f-image" type="text" placeholder="Paste an image URL or upload">
+              <label class="adm-btn" for="f-upload">Upload</label>
+              <input id="f-upload" type="file" accept="image/*" hidden>
+            </div>
+            <img id="cover-preview" class="cover-preview" alt="" hidden>
+            <div class="grid2"><div class="field"><label for="f-imgpos">Image focus</label>
+              <select id="f-imgpos"><option>center</option><option>top</option><option>bottom</option><option>left</option><option>right</option></select></div></div>
+          </div>
+
+          <div class="grid2">
+            <div class="field"><label for="f-svc">Related service (sidebar link)</label>
+              <select id="f-svc"></select></div>
+          </div>
+
+          <div class="field">
+            <label for="f-body">Body <span class="muted small" id="wordcount"></span></label>
+            <div class="toolbar" id="toolbar" role="toolbar" aria-label="Formatting">
+              <button type="button" data-act="h2">H2</button>
+              <button type="button" data-act="h3">H3</button>
+              <button type="button" data-act="bold"><b>B</b></button>
+              <button type="button" data-act="italic"><i>I</i></button>
+              <button type="button" data-act="ul">&bull; List</button>
+              <button type="button" data-act="ol">1. List</button>
+              <button type="button" data-act="quote">Quote</button>
+              <button type="button" data-act="link">Link</button>
+              <button type="button" data-act="internal">Internal link</button>
+              <button type="button" data-act="image">Image</button>
+              <button type="button" data-act="faq">FAQ block</button>
+              <input id="f-inline-upload" type="file" accept="image/*" hidden>
+            </div>
+            <textarea id="f-body" rows="22" spellcheck="true"></textarea>
+            <p class="hint">Markdown. FAQ: write <code>Q: question</code> then <code>A: answer</code> lines &mdash; they become an accordion.</p>
+          </div>
+
+          <div class="card" id="link-suggest">
+            <h3>Internal link suggestions</h3>
+            <p class="muted small">Pages and posts your text already mentions. One click links the first mention.</p>
+            <ul id="suggest-list" class="suggest"></ul>
+          </div>
+        </section>
+
+        <!-- SEO -->
+        <section class="pane" data-pane="seo" hidden>
+          <div class="card serp">
+            <h3>Search result preview</h3>
+            <div class="serp-box">
+              <div class="serp-url" id="serp-url"></div>
+              <div class="serp-title" id="serp-title"></div>
+              <div class="serp-desc" id="serp-desc"></div>
+            </div>
+          </div>
+
+          <div class="field"><label for="f-kw">Focus keyword</label>
+            <input id="f-kw" type="text" placeholder="e.g. warehousing costs"></div>
+          <div class="field"><label for="f-mtitle">Meta title <span class="counter" id="mtitle-count"></span></label>
+            <input id="f-mtitle" type="text" placeholder="Defaults to: {title} | StowFlex Blog"></div>
+          <div class="field"><label for="f-mdesc">Meta description <span class="counter" id="mdesc-count"></span></label>
+            <textarea id="f-mdesc" rows="3" placeholder="Defaults to the excerpt"></textarea></div>
+          <div class="field"><label for="f-canon">Canonical URL <span class="muted small">optional</span></label>
+            <input id="f-canon" type="url" placeholder="Leave blank to use this page's own URL"></div>
+          <div class="field"><label for="f-og">Social share image <span class="muted small">optional, defaults to cover</span></label>
+            <input id="f-og" type="text"></div>
+          <label class="check"><input id="f-noindex" type="checkbox"> Hide from search engines and the blog listing (noindex)</label>
+
+          <div class="card"><h3>SEO checklist</h3><ul id="seo-checks" class="checks"></ul></div>
+        </section>
+
+        <!-- Preview -->
+        <section class="pane" data-pane="preview" hidden>
+          <article class="adm-preview">
+            <h1 id="pv-title"></h1>
+            <p class="muted" id="pv-meta"></p>
+            <img id="pv-cover" alt="" hidden>
+            <div class="article-body" id="pv-body"></div>
+          </article>
+        </section>
+
+        <div class="adm-actions" id="actions">
+          <button type="button" class="adm-btn danger" id="btn-delete">Delete</button>
+          <span class="spacer"></span>
+          <button type="button" class="adm-btn" id="btn-unpublish" hidden>Unpublish</button>
+          <button type="button" class="adm-btn" id="btn-save">Save draft</button>
+          <button type="button" class="adm-btn primary" id="btn-publish">Publish</button>
+        </div>
+      </form>
+    </main>
+  </div>
+</div>
+
+
+<div id="toast" class="adm-toast" role="status" aria-live="polite" hidden></div>
+
+<script src="config.js"></script>
+<script src="admin.js?v=1"></script>
+</body>
+</html>

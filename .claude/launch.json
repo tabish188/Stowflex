@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "stowflex-site",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [".claude/serve.js", "8810"],
+      "port": 8810
+    }
+  ]
+}

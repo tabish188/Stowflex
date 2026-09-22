@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm -v)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{size_download} bytes\\\\n\" \"https://lh3.googleusercontent.com/aida-public/AB6AXuBcavLYWxjuUHeHwcsDmEqG51weEQRYq2B6Jgj8SXQtd6kZWZd-23po22w5vji16HVuWquRK16Al52_2C7fNd5E4VtkJrf7gZt1V1MRW7lzn6JPKgORa7SJCseKeRBcaziBW42bxzJwhkpHC1gxFydTkbkA_A_yVu_a3gKXLVTZ0sqsaKGdO0My3OirYvI4X5vh6tZUG6LmgcVjxsUizTMMY9HMbd4QBOIQrSZPo5-RhbFv6c9wKcA2-Q\")",
+      "Bash(cp raw/logo_a.png logo.png)",
+      "Bash(cp raw/hero_warehouse.jpg hero-warehouse.jpg)",
+      "Bash(cp raw/industry_ecommerce.jpg industry-ecommerce.jpg)",
+      "Bash(cp raw/about_hero.jpg about-hero.jpg)",
+      "Bash(cp raw/whytrust_bg.jpg whytrust-bg.jpg)",
+      "Bash(curl -s -o inter-latin-var.woff2 \"https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2\")",
+      "Bash(rm inter.css)",
+      "Bash(mkdir -p assets/css assets/js assets/fonts assets/img)",
+      "Bash(mv src/assets/fonts/inter-latin-var.woff2 assets/fonts/)",
+      "Bash(mv src/assets/img/logo.png src/assets/img/hero-warehouse.jpg src/assets/img/industry-ecommerce.jpg src/assets/img/about-hero.jpg src/assets/img/whytrust-bg.jpg src/assets/img/map-bg.png assets/img/)",
+      "Bash(rm -rf src design_source)",
+      "Bash(cd \"/c/Users/Admin/Downloads/Stowflex_website\" && rmdir src/assets/fonts src/assets src 2>&1; ls -la; echo \"---design_source---\"; ls design_source 2>&1)",
+      "Bash(python3 -c \"print\\('ok'\\)\")",
+      "Bash(grep -o '`' build-blog.js)",
+      "Bash(grep -n '`' build-blog.js)",
+      "Bash(perl _add_modal.pl index.html about.html services.html faq.html blog.html privacy-policy.html terms-of-service.html cookie-policy.html blog/cut-warehousing-costs.html blog/choosing-warehousing-model.html blog/returns-reverse-logistics.html)",
+      "Bash(xargs -I{} stat -c \"%Y %n\" {})",
+      "PowerShell(powershell -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-Admin-Downloads-Stowflex-website\\\\08de9a2d-88ff-4baa-bf74-5f51cf166066\\\\scratchpad\\\\save-server.ps1\")"
+    ]
+  }
+}

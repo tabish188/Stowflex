@@ -1,0 +1,571 @@
+<title>StowFlex Funnel Audit</title>
+<style>
+:root{
+  --bg:#F3F5F1;
+  --surface:#FFFFFF;
+  --surface-2:#EAEDE6;
+  --text:#191D1A;
+  --text-2:#565F58;
+  --text-3:#8B948C;
+  --border:#DBDFD5;
+  --border-2:#C6CCC0;
+  --accent:#233F58;
+  --accent-2:#3E6280;
+  --good:#2E6B4E;
+  --good-bg:#E4EFE6;
+  --warn:#96650F;
+  --warn-bg:#F5ECD8;
+  --bad:#9C3B2C;
+  --bad-bg:#F5E3DE;
+  --shadow: 0 1px 2px rgba(25,29,26,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14171A;
+    --surface:#1B1F21;
+    --surface-2:#22262A;
+    --text:#E7EAE5;
+    --text-2:#A6AEA5;
+    --text-3:#767F76;
+    --border:#2C3230;
+    --border-2:#3A423E;
+    --accent:#7FA6C2;
+    --accent-2:#9CC0DA;
+    --good:#7FC49E;
+    --good-bg:#1D3327;
+    --warn:#E0B45C;
+    --warn-bg:#3A2F17;
+    --bad:#E2897A;
+    --bad-bg:#3A241F;
+    --shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14171A;
+  --surface:#1B1F21;
+  --surface-2:#22262A;
+  --text:#E7EAE5;
+  --text-2:#A6AEA5;
+  --text-3:#767F76;
+  --border:#2C3230;
+  --border-2:#3A423E;
+  --accent:#7FA6C2;
+  --accent-2:#9CC0DA;
+  --good:#7FC49E;
+  --good-bg:#1D3327;
+  --warn:#E0B45C;
+  --warn-bg:#3A2F17;
+  --bad:#E2897A;
+  --bad-bg:#3A241F;
+  --shadow: 0 1px 2px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);margin:0}
+.wrap{max-width:800px;margin:0 auto;padding:2.5rem 20px 5rem}
+h1,h2,h3,h4{font-family:'Fraunces',Georgia,'Times New Roman',serif;font-weight:500;text-wrap:balance;color:var(--text);margin:0}
+p,li,td,th{font-family:'Inter',system-ui,-apple-system,sans-serif}
+.mono{font-family:'IBM Plex Mono','SF Mono',Consolas,monospace}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--text-3)}
+header.top{border-bottom:1px solid var(--border);padding-bottom:2rem;margin-bottom:2.2rem}
+header.top h1{font-size:2.15rem;line-height:1.15;margin-top:.5rem}
+header.top .dek{font-size:1.05rem;color:var(--text-2);line-height:1.6;max-width:64ch;margin-top:.9rem}
+.meta-row{display:flex;flex-wrap:wrap;gap:1.5rem;margin-top:1.3rem;font-size:.82rem;color:var(--text-3)}
+.meta-row b{color:var(--text-2);font-weight:500}
+
+.stage-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:1.6rem}
+@media (max-width:640px){.stage-grid{grid-template-columns:1fr}}
+.stage-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;box-shadow:var(--shadow)}
+.stage-card .tag{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}
+.stage-card h4{font-size:1rem;margin-top:.3rem;font-family:'Inter',sans-serif;font-weight:600}
+.verdict-chip{display:inline-flex;align-items:center;gap:.35rem;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.03em;padding:.2rem .55rem;border-radius:5px;margin-top:.55rem;border:1px solid transparent}
+.v-pass{background:var(--good-bg);color:var(--good);border-color:var(--good)}
+.v-caution{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+.v-fail{background:var(--bad-bg);color:var(--bad);border-color:var(--bad)}
+.stage-card p{font-size:.86rem;color:var(--text-2);line-height:1.55;margin-top:.55rem}
+
+nav.toc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.3rem;margin:2.2rem 0;box-shadow:var(--shadow)}
+nav.toc .eyebrow{margin-bottom:.6rem;display:block}
+nav.toc ol{margin:0;padding-left:1.15rem;columns:2;column-gap:1.5rem}
+@media (max-width:560px){nav.toc ol{columns:1}}
+nav.toc li{font-size:.88rem;margin-bottom:.4rem;break-inside:avoid}
+nav.toc a{text-decoration:none;color:var(--text)}
+nav.toc a:hover{color:var(--accent)}
+nav.toc .stagehint{font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--text-3);margin-left:.35rem}
+
+.highlight-box{background:var(--good-bg);border:1px solid var(--good);border-radius:10px;padding:1.2rem 1.4rem;margin:2rem 0}
+.highlight-box h3{color:var(--good);font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+.highlight-box ul{margin:.7rem 0 0;padding-left:1.2rem}
+.highlight-box li{font-size:.92rem;line-height:1.55;margin-bottom:.45rem;color:var(--text)}
+
+section.page-section{margin:2.6rem 0;padding-top:1.8rem;border-top:1px solid var(--border)}
+.page-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:.6rem;margin-bottom:.3rem}
+.filetag{font-family:'IBM Plex Mono',monospace;font-size:.78rem;background:var(--surface-2);border:1px solid var(--border-2);padding:.15rem .5rem;border-radius:5px;color:var(--text-2)}
+.stage-tags{display:flex;gap:.35rem}
+.stage-dot{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.05em;text-transform:uppercase;padding:.12rem .4rem;border-radius:4px;border:1px solid var(--border-2);color:var(--text-2)}
+.page-section h2{font-size:1.35rem;margin-top:.4rem}
+.page-role{font-size:.88rem;color:var(--text-2);margin-top:.4rem;max-width:66ch;line-height:1.55}
+
+.note{display:grid;grid-template-columns:120px 1fr;gap:1rem;margin-top:1.1rem;padding-top:1.1rem;border-top:1px dashed var(--border)}
+@media (max-width:560px){.note{grid-template-columns:1fr;gap:.3rem}}
+.note .label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);padding-top:.15rem}
+.note .body{font-size:.94rem;line-height:1.65;color:var(--text)}
+.note .body p{margin:0 0 .6rem}
+.note .body p:last-child{margin-bottom:0}
+.note .body b{font-weight:600}
+.finding{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.68rem;padding:.05rem .4rem;border-radius:4px;margin-left:.4rem;vertical-align:1px}
+.f-high{background:var(--bad-bg);color:var(--bad)}
+.f-med{background:var(--warn-bg);color:var(--warn)}
+.f-strength{background:var(--good-bg);color:var(--good)}
+
+.verdict-line{margin-top:1.2rem;padding:.9rem 1.1rem;background:var(--surface-2);border-radius:8px;font-size:.9rem;line-height:1.6}
+.verdict-line .vlab{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:.35rem}
+
+.ledger{margin-top:1.6rem;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--surface)}
+.ledger-row{display:grid;grid-template-columns:64px 1fr;gap:0;border-top:1px solid var(--border)}
+.ledger-row:first-child{border-top:none}
+@media (max-width:560px){.ledger-row{grid-template-columns:1fr}}
+.ledger-sev{display:flex;align-items:flex-start;justify-content:center;padding:1rem 0;font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;writing-mode:horizontal-tb}
+.sev-high{color:var(--bad)}
+.sev-med{color:var(--warn)}
+.sev-low{color:var(--text-3)}
+.ledger-content{padding:1rem 1.2rem 1rem 0;border-left:1px solid var(--border)}
+@media (max-width:560px){.ledger-content{border-left:none;border-top:1px solid var(--border);padding:.8rem 1rem}}
+.ledger-content h4{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;margin-bottom:.35rem}
+.ledger-content p{font-size:.87rem;color:var(--text-2);line-height:1.6;margin:0}
+.ledger-content .loc{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--text-3);margin-top:.4rem;display:block}
+
+.closing{margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border)}
+.closing h2{font-size:1.5rem}
+.closing p{font-size:.98rem;line-height:1.7;color:var(--text-2);max-width:68ch;margin-top:.9rem}
+.closing .final-verdict{margin-top:1.4rem;padding:1.3rem 1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow)}
+.closing .final-verdict b{color:var(--text)}
+
+@media (prefers-reduced-motion: no-preference){
+  html{scroll-behavior:smooth}
+}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<div class="wrap">
+
+<header class="top">
+  <span class="eyebrow">Conversion &amp; UX audit &middot; stowflex_website (local build)</span>
+  <h1>Would this site convince you to book?</h1>
+  <p class="dek">A page-by-page, section-by-section read of the current site, walked three times &mdash; as a cold visitor with no demand yet, a warm buyer comparing vendors, and a hot buyer ready to submit a form &mdash; covering UI/UX, imagery, copy, and motion, with concrete fixes where conviction is currently thin.</p>
+  <div class="meta-row">
+    <span><b>Scope</b> &middot; index, about, services (hub + 4 detail), case-studies, faq</span>
+    <span><b>Method</b> &middot; direct source read of each page as currently deployed, no build step</span>
+    <span><b>Prepared</b> &middot; Sep 2026</span>
+  </div>
+
+  <div class="stage-grid">
+    <div class="stage-card">
+      <span class="tag">Stage 1 &middot; cold</span>
+      <h4>First-time visitor, no demand yet</h4>
+      <span class="verdict-chip v-pass">converts to interest</span>
+      <p>Real facility photos plus three hard numbers in the first scroll orient a stranger fast. The hero CTA and one badge oversell for someone this early &mdash; see findings.</p>
+    </div>
+    <div class="stage-card">
+      <span class="tag">Stage 2 &middot; warm</span>
+      <h4>Comparing 3PL vendors</h4>
+      <span class="verdict-chip v-caution">converts, with friction</span>
+      <p>Service pages and FAQ answer real objections well. Two credibility inconsistencies &mdash; testimonials vs. named case studies, city counts &mdash; surface exactly when this buyer is cross-checking claims.</p>
+    </div>
+    <div class="stage-card">
+      <span class="tag">Stage 3 &middot; hot</span>
+      <h4>Ready to book</h4>
+      <span class="verdict-chip v-pass">closes the sale</span>
+      <p>No lock-in, no deposit, a same-page contact form, and phone/WhatsApp/email all one click away remove the two objections that usually stall a signature.</p>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <span class="eyebrow">On this page</span>
+  <ol>
+    <li><a href="#home">index.html &mdash; home</a><span class="stagehint">cold&rarr;warm</span></li>
+    <li><a href="#about">about.html</a><span class="stagehint">warm</span></li>
+    <li><a href="#services-hub">services.html</a><span class="stagehint">warm</span></li>
+    <li><a href="#ecomm">services&#8209;ecommerce&#8209;fulfillment.html</a><span class="stagehint">warm&rarr;hot</span></li>
+    <li><a href="#warehousing">services&#8209;warehousing&#8209;distribution.html</a><span class="stagehint">warm</span></li>
+    <li><a href="#logistics">services&#8209;logistics.html</a><span class="stagehint">warm</span></li>
+    <li><a href="#asset-storage">services&#8209;asset&#8209;storage.html</a><span class="stagehint">warm</span></li>
+    <li><a href="#case-studies">case&#8209;studies.html</a><span class="stagehint">hot</span></li>
+    <li><a href="#faq">faq.html</a><span class="stagehint">hot</span></li>
+    <li><a href="#ledger">Prioritized fix list</a></li>
+    <li><a href="#verdict">Final verdict</a></li>
+  </ol>
+</nav>
+
+<div class="highlight-box">
+  <h3>What's genuinely working right now</h3>
+  <ul>
+    <li><b>The real facility photos are the single best thing that happened to this site this session.</b> Replacing stock-feeling illustrations with an actual warehouse floor, an actual secured storage cage, and an actual gated Pune facility answers the first unspoken question every cold B2B buyer has about a 3PL site: <i>"is this a real operator, or a lead-gen shell?"</i> The About page even says it outright &mdash; "this is one of our actual warehouses, not a stock photo" &mdash; which is exactly the right instinct.</li>
+    <li><b>Motion is disciplined.</b> Fade-up reveals, staggered hero entrances, an auto-scrolling logo strip &mdash; nothing loops obnoxiously, nothing autoplays with sound, everything respects reduced-motion. For an operations buyer who wants information fast, restraint here is a feature, not a gap.</li>
+    <li><b>No lock-in / no deposit / pay-as-you-use messaging is repeated consistently</b> across the warehousing, e-commerce, and asset-storage pages &mdash; this directly defuses the two biggest objections in a warehousing contract (being trapped, and tying up cash) before the buyer has to ask.</li>
+    <li><b>Case studies are specific, not generic.</b> Named companies, named problems, named numbers (93% fewer damages, 5,000&rarr;40,000 orders/month, zero-deposit terms for a public-sector bank). This is the strongest proof asset on the site.</li>
+  </ul>
+</div>
+
+<section class="page-section" id="home">
+  <div class="page-head">
+    <span class="filetag">index.html</span>
+    <div class="stage-tags"><span class="stage-dot">cold</span><span class="stage-dot">warm</span></div>
+  </div>
+  <h2>Home &mdash; first impression and self-qualification</h2>
+  <p class="page-role">Job: convince a stranger in ten seconds that this is a real, credible operator worth reading further, then let them self-sort by industry and service before asking for anything.</p>
+
+  <div class="note">
+    <span class="label">Hero</span>
+    <div class="body">
+      <p>The warehouse-floor photo plus "99.9% Inventory Accuracy" float-card lands well &mdash; concrete and specific. Two things undercut it for a genuinely cold visitor: the badge <span class="mono">"India's Premier 3PL Provider"</span> is an unverifiable superlative with no source, and the primary CTA <span class="mono">"Start Shipping Now"</span> reads like a self-serve SaaS signup <span class="finding f-med">finding</span>. Nothing on this site is self-serve &mdash; every path leads to a lead form and a human follow-up &mdash; so a cold visitor who clicks expecting instant action gets a form instead, a small trust tax right at the first click.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <span class="label">Stat band</span>
+    <div class="body">
+      <p>70% cost savings, 5,00,000+ monthly orders, 6,50,000+ sq ft across 17 warehouses &mdash; landing directly under the hero, this is well-sequenced and does real credibility work before asking the visitor to read anything else.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <span class="label">Coverage grid</span>
+    <div class="body">
+      <p>Shows 8 active cities (Bangalore HQ + Chennai, Mumbai, Delhi, Hyderabad, Pune, Kolkata, Noida). Every stat band and FAQ answer on the site, though, says <span class="mono">"17 facilities in 6 major Indian cities."</span> <span class="finding f-high">finding</span> A numbers-literate buyer &mdash; and the new testimonials are literally quoting a "Finance &amp; Operations Director" and a COO &mdash; will notice 8&nbsp;&ne;&nbsp;6 within the first page. It reads as sloppy proofing at exactly the moment the site is trying to look operationally rigorous.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <span class="label">Offerings</span>
+    <div class="body">
+      <p>Only 3 of the 4 real service lines appear in the homepage grid &mdash; Asset Storage Solutions is missing here (it's on services.html). A bank or NBFC risk officer landing cold on the homepage has to notice the mega-menu to discover the one service line built for them. <span class="finding f-med">finding</span></p>
+    </div>
+  </div>
+
+  <div class="note">
+    <span class="label">Why Trust panel</span>
+    <div class="body">
+      <p>This section sits at the exact moment a considering visitor wants the strongest proof on the page, and it undercuts itself. The showcase panel leads with a specific, named, numbered claim &mdash; <span class="mono">"93% fewer damages, &#8377;30L revenue in 3 months" &mdash; Furniselan</span> &mdash; and directly beneath it, ten fresh testimonials from real named people carry no company names (just "D2C Consumer Brand," "Retail Brand"), no photos, and the identical generic silhouette avatar on every single card. <span class="finding f-high">finding</span> Furniselan itself isn't among the ten. The effect: the page's strongest, most specific proof is immediately followed by its weakest-looking proof, and a skeptical reader notices the demotion in specificity rather than an accumulation of evidence.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <span class="label">Testimonial CTAs</span>
+    <div class="body">
+      <p>"See Our Case Studies" appears after the trust-logo strip, and "Read Full Case Studies" appears again about 300px later after the testimonials &mdash; two near-identical CTAs to the same destination in quick succession. Not harmful, just redundant real estate that could instead point one of them somewhere new (e.g. the FAQ, or directly to a relevant service page based on which testimonial the visitor just read).</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <span class="label">Lead form</span>
+    <div class="body">
+      <p>The homepage form itself is well-built for conversion &mdash; only two required fields plus a dropdown, no phone number demanded, and a differentiated CTA ("schedule a free warehouse tour or design session") that's more concrete than a generic "consultation." But it's the only lead form on the site missing the reassurance line every other form carries &mdash; "No spam. We respond within 1 business day." <span class="finding f-med">finding</span> That's backwards: this is the site's highest-traffic conversion point, and it's the one place skipping the friction-reducing microcopy.</p>
+    </div>
+  </div>
+
+  <div class="verdict-line">
+    <span class="vlab">Stage read</span>
+    A cold visitor gets oriented and starts trusting the brand within one scroll &mdash; the photography and stat band do real work. A warm visitor scrolling the same page toward the bottom starts noticing the seams: the city-count mismatch and the testimonial/case-study credibility gap both live here, on the page most people re-visit before filling out the form.
+  </div>
+</section>
+
+<section class="page-section" id="about">
+  <div class="page-head">
+    <span class="filetag">about.html</span>
+    <div class="stage-tags"><span class="stage-dot">warm</span></div>
+  </div>
+  <h2>About &mdash; the page a skeptical buyer visits on purpose</h2>
+  <p class="page-role">Nobody lands here cold. This page exists for the visitor who already read the homepage and is now checking: who actually runs this company?</p>
+
+  <div class="note">
+    <span class="label">Our Facility</span>
+    <div class="body">
+      <p>This is the standout addition this session. A real photo of the gated Pune facility, captioned plainly &mdash; <span class="mono">"This is one of our actual warehouses &mdash; not a stock photo"</span> &mdash; is the single most direct piece of copy on the entire site for defusing shell-company suspicion. <span class="finding f-strength">strength</span> It says the quiet part out loud instead of hoping the photo speaks for itself.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <span class="label">Timeline &amp; leadership</span>
+    <div class="body">
+      <p>A 2019&ndash;2025 evolutionary timeline plus four real leadership photos humanize a vendor a buyer is about to hand inventory and cash flow to. This is doing exactly the job an About page should do at the warm stage &mdash; no changes needed here.</p>
+    </div>
+  </div>
+
+  <div class="verdict-line">
+    <span class="vlab">Stage read</span>
+    Strong. This is the page working hardest for the warm buyer, and it shows.
+  </div>
+</section>
+
+<section class="page-section" id="services-hub">
+  <div class="page-head">
+    <span class="filetag">services.html</span>
+    <div class="stage-tags"><span class="stage-dot">warm</span></div>
+  </div>
+  <h2>Services hub &mdash; the comparison page</h2>
+  <p class="page-role">A warm buyer who knows roughly what they need arrives here to confirm StowFlex covers it, then picks a detail page.</p>
+  <div class="note">
+    <span class="label">Overview cards</span>
+    <div class="body">
+      <p>All four service lines, each with two headline differentiators and both a "Learn More" and a modal "Get Quote" &mdash; correctly gives the warm buyer two speeds (keep researching vs. convert now). Clean, no complaints.</p>
+    </div>
+  </div>
+  <div class="note">
+    <span class="label">Secondary CTA on home</span>
+    <div class="body">
+      <p>The homepage hero promises <span class="mono">"See Pricing Models"</span> and links here &mdash; but there are no prices, numbers, or a calculator anywhere on this page or any service page, only qualitative bullets like "Pay-as-per-Usage." <span class="finding f-med">finding</span> That's a normal and defensible choice for a quote-based B2B service, but the link text sets up an expectation ("pricing") the destination doesn't pay off. Rename the homepage link to something the page actually delivers, e.g. <span class="mono">"Compare Service Models."</span></p>
+    </div>
+  </div>
+  <div class="verdict-line">
+    <span class="vlab">Stage read</span>
+    Does its job as a router. The only issue is upstream, in what the homepage promises before sending traffic here.
+  </div>
+</section>
+
+<section class="page-section" id="ecomm">
+  <div class="page-head">
+    <span class="filetag">services-ecommerce-fulfillment.html</span>
+    <div class="stage-tags"><span class="stage-dot">warm</span><span class="stage-dot">hot</span></div>
+  </div>
+  <h2>E-commerce fulfillment &mdash; the most complete page on the site</h2>
+  <p class="page-role">This is the deepest, most bottom-of-funnel page built: 8 capability cards, a "problems we face &rarr; solutions we offer" section that mirrors how the buyer is already framing their own pain, a mid-page embedded lead form, a service-specific FAQ, and a scroll-triggered popup form.</p>
+  <div class="note">
+    <span class="label">Structure</span>
+    <div class="body">
+      <p>Running a lead form twice (embedded mid-page, plus a scroll-triggered popup) plus quote buttons in the header is aggressive, and correctly so &mdash; this is the page a paid-search click for "e-commerce fulfillment India" should land on, and it's built like it knows that. No changes needed.</p>
+    </div>
+  </div>
+  <div class="note">
+    <span class="label">Proof block</span>
+    <div class="body">
+      <p>Reuses the same Furniselan quote as the homepage, but here it sits alone as the page's one proof point rather than next to a contradicting testimonial set, so it reads cleanly. This is a case where the same content works on one page and works against itself on another &mdash; context, not the content, is the problem on the homepage.</p>
+    </div>
+  </div>
+  <div class="verdict-line">
+    <span class="vlab">Stage read</span>
+    Closes. This is the template the other three service pages should be measured against.
+  </div>
+</section>
+
+<section class="page-section" id="warehousing">
+  <div class="page-head">
+    <span class="filetag">services-warehousing-distribution.html</span>
+    <div class="stage-tags"><span class="stage-dot">warm</span></div>
+  </div>
+  <h2>Warehousing &amp; distribution</h2>
+  <div class="note">
+    <span class="label">Hero &amp; models</span>
+    <div class="body">
+      <p>Hero photo now matches the rest of the real-photography set. The <span class="mono">#warehousing-models</span> section is correctly anchor-linked from the FAQ page's "shared vs. dedicated" answer &mdash; verified working, no dead link. This is the right pattern: FAQ raises the question, service page gives the full answer one click away.</p>
+    </div>
+  </div>
+  <div class="verdict-line">
+    <span class="vlab">Stage read</span>
+    Solid, consistent with the rest of the funnel.
+  </div>
+</section>
+
+<section class="page-section" id="logistics">
+  <div class="page-head">
+    <span class="filetag">services-logistics.html</span>
+    <div class="stage-tags"><span class="stage-dot">warm</span></div>
+  </div>
+  <h2>3PL logistics (FTL/PTL)</h2>
+  <div class="note">
+    <span class="label">Hero</span>
+    <div class="body">
+      <p>Swapped from a generic map graphic to a real fleet/exterior photo &mdash; a concrete upgrade for a buyer trying to judge fleet scale and condition, which a map illustration could never communicate.</p>
+    </div>
+  </div>
+  <div class="verdict-line">
+    <span class="vlab">Stage read</span>
+    Solid.
+  </div>
+</section>
+
+<section class="page-section" id="asset-storage">
+  <div class="page-head">
+    <span class="filetag">services-asset-storage.html</span>
+    <div class="stage-tags"><span class="stage-dot">warm</span></div>
+  </div>
+  <h2>Asset storage &mdash; the best image-to-audience match this session</h2>
+  <p class="page-role">This page targets a narrow, risk-averse buyer &mdash; a bank or NBFC officer deciding where to store seized collateral. That buyer trusts what they can see, not adjectives.</p>
+  <div class="note">
+    <span class="label">Hero &amp; facility proof</span>
+    <div class="body">
+      <p>Replacing the abstract bank/vault SVG illustration with a real photo of a tarped, wire-mesh secured cage &mdash; then adding a second real photo of racked, organized pallets in a dedicated "Facility Proof" section further down &mdash; is exactly right for this audience. <span class="finding f-strength">strength</span> A risk officer evaluating physical custody cares about mesh gauge, tarping, and shelf organization far more than the phrase "biometric vaults" alone can convey. Photographic evidence outperforms compliance copy for this specific buyer.</p>
+    </div>
+  </div>
+  <div class="verdict-line">
+    <span class="vlab">Stage read</span>
+    The imagery decision here does more conversion work than the copy does &mdash; correctly so, for this audience.
+  </div>
+</section>
+
+<section class="page-section" id="case-studies">
+  <div class="page-head">
+    <span class="filetag">case-studies.html</span>
+    <div class="stage-tags"><span class="stage-dot">hot</span></div>
+  </div>
+  <h2>Case studies &mdash; where a hot buyer goes to verify before signing</h2>
+  <p class="page-role">Three named, detailed stories: Furniselan (D2C furniture), Nexten Brands (baby care/FMCG), Canara Bank (NPA asset storage). Each pairs a specific challenge list with a specific results list &mdash; this is genuinely strong, checkable-feeling proof, the best on the site.</p>
+  <div class="note">
+    <span class="label">Hero mosaic</span>
+    <div class="body">
+      <p>The four stat tiles at the top (93%, 40%, &#8377;30L, 8x) read at a glance like four independent proof points, but three of the four all belong to Furniselan alone. <span class="finding f-med">finding</span> A careful reader parses the small attribution labels correctly, but the first-glance impression slightly overstates how many clients are backing the claim. Grouping the three Furniselan numbers visually (one tile, three stats) rather than presenting them as four peers would make the mosaic as honest as the detailed case studies below it already are.</p>
+    </div>
+  </div>
+  <div class="note">
+    <span class="label">Coverage gap</span>
+    <div class="body">
+      <p>The homepage claims "200+ businesses served" and eight served industries, but only three companies are documented here, covering three industries (furniture, baby-care/FMCG, banking). A buyer in healthcare, electronics, industrial machinery, personal care, automobile, or general retail &mdash; six of the eight claimed industries &mdash; finds zero proof specific to them at exactly the page built to provide it. <span class="finding f-med">finding</span> The new homepage testimonials already hint at real clients in manufacturing, industrial, and general retail/e-commerce; even short capsule write-ups (no full challenge/results panel needed) for two or three of those would close the gap without inventing anything.</p>
+    </div>
+  </div>
+  <div class="verdict-line">
+    <span class="vlab">Stage read</span>
+    Convinces a buyer whose industry is already represented; leaves one whose industry isn't with slightly less to go on than the homepage implied they'd find.
+  </div>
+</section>
+
+<section class="page-section" id="faq">
+  <div class="page-head">
+    <span class="filetag">faq.html</span>
+    <div class="stage-tags"><span class="stage-dot">hot</span></div>
+  </div>
+  <h2>FAQ &amp; contact &mdash; the last page before the form</h2>
+  <div class="note">
+    <span class="label">Accordion</span>
+    <div class="body">
+      <p>Tabbed by category (e-commerce, warehousing, logistics) and ordered sensibly &mdash; documents needed, agreement flexibility, damage policy, insurance, pricing model, billing terms. This is real objection-handling, not filler FAQ. No changes needed.</p>
+    </div>
+  </div>
+  <div class="note">
+    <span class="label">Map</span>
+    <div class="body">
+      <p>The location panel is a static background image with a pin overlay, not a live embedded map. For a business whose entire pitch rests on "we run real physical facilities," letting a buyer actually pan/zoom the HQ location (the footer already links a real Google Maps URL) would reinforce the same point the About page's facility photo is making, at zero extra cost.</p>
+    </div>
+  </div>
+  <div class="note">
+    <span class="label">Contact form</span>
+    <div class="body">
+      <p>Appropriately more detailed than the homepage form (adds company name and a city selector) &mdash; correct, since someone reaching this page has already decided to commit specifics. Sits with zero scroll distance below the FAQ, so "I have one more question" flows straight into "here's my answer, now here's my info." Good sequencing.</p>
+    </div>
+  </div>
+  <div class="note">
+    <span class="label">What happens next</span>
+    <div class="body">
+      <p>Every form on the site promises a reply "within 1 business day," but none say what that reply actually is &mdash; a phone call, an emailed quote, another form. <span class="finding f-med">finding</span> A hot buyer converts more reliably when the very next step is named, e.g. "we'll call you within 1 business day to schedule a warehouse walkthrough."</p>
+    </div>
+  </div>
+  <div class="verdict-line">
+    <span class="vlab">Stage read</span>
+    Closes the sale. The gaps here are about setting expectations for what comes after the click, not about winning the click itself.
+  </div>
+</section>
+
+<section id="ledger">
+  <h2 style="font-size:1.6rem;margin-top:3rem">Prioritized fix list</h2>
+  <p style="color:var(--text-2);font-size:.92rem;margin-top:.6rem;max-width:66ch">Ordered by how directly each one costs a conversion at the stage it occurs, not by effort to fix &mdash; most of these are copy or content changes, not rebuilds.</p>
+  <div class="ledger">
+    <div class="ledger-row">
+      <div class="ledger-sev sev-high">High</div>
+      <div class="ledger-content">
+        <h4>Reconcile the city count</h4>
+        <p>Pick one number. Either the coverage grid should mark only 6 cities "Active" (moving Kolkata/Noida to a lighter "extended coverage" style), or every "6 major Indian cities" claim sitewide should become "8 cities" / "6 hub cities plus 2 extended." Currently both numbers are asserted as fact in different sections of the same page.</p>
+        <span class="loc">index.html &middot; city-grid vs. stat-band &amp; FAQ schema</span>
+      </div>
+    </div>
+    <div class="ledger-row">
+      <div class="ledger-sev sev-high">High</div>
+      <div class="ledger-content">
+        <h4>Fix the testimonial/case-study credibility drop</h4>
+        <p>Either name the real company type more specifically for each of the 10 testimonials (even "D2C furniture brand, Jaipur" beats "D2C Consumer Brand"), vary the avatar treatment so the cards don't read as templated, or move the Furniselan-quote showcase panel to sit after the testimonials instead of immediately before them, so specificity ramps up rather than drops.</p>
+        <span class="loc">index.html &middot; "Why Trust StowFlex" showcase panel + testimonial grid</span>
+      </div>
+    </div>
+    <div class="ledger-row">
+      <div class="ledger-sev sev-med">Medium</div>
+      <div class="ledger-content">
+        <h4>Add the missing reassurance line to the homepage lead form</h4>
+        <p>Every other form on the site carries "No spam. We respond within 1 business day." The homepage form &mdash; the highest-traffic one &mdash; is the only one missing it.</p>
+        <span class="loc">index.html &middot; #lead-form section</span>
+      </div>
+    </div>
+    <div class="ledger-row">
+      <div class="ledger-sev sev-med">Medium</div>
+      <div class="ledger-content">
+        <h4>Re-tone the hero CTA</h4>
+        <p>Swap "Start Shipping Now" for a consultative-register phrase matching the rest of the site's CTAs ("Get Free Consultation," "Talk to an Expert," "Request a Proposal"), since nothing on the site is actually self-serve.</p>
+        <span class="loc">index.html &middot; hero</span>
+      </div>
+    </div>
+    <div class="ledger-row">
+      <div class="ledger-sev sev-med">Medium</div>
+      <div class="ledger-content">
+        <h4>Rename or repoint the "See Pricing Models" link</h4>
+        <p>Services.html has no prices or calculator. Rename the link to match what the destination delivers, e.g. "Compare Service Models."</p>
+        <span class="loc">index.html &middot; hero secondary CTA &rarr; services.html</span>
+      </div>
+    </div>
+    <div class="ledger-row">
+      <div class="ledger-sev sev-med">Medium</div>
+      <div class="ledger-content">
+        <h4>Broaden case-study industry coverage</h4>
+        <p>Add 2&ndash;3 short capsule case studies for industries currently claimed but not evidenced &mdash; manufacturing, industrial, or general retail/e-commerce would align directly with three of the new homepage testimonials.</p>
+        <span class="loc">case-studies.html</span>
+      </div>
+    </div>
+    <div class="ledger-row">
+      <div class="ledger-sev sev-low">Low</div>
+      <div class="ledger-content">
+        <h4>Group the case-studies hero mosaic by client</h4>
+        <p>Visually cluster the three Furniselan stats into one tile so the mosaic doesn't read as four independent proof points from four clients.</p>
+        <span class="loc">case-studies.html &middot; hero-stats-mosaic</span>
+      </div>
+    </div>
+    <div class="ledger-row">
+      <div class="ledger-sev sev-low">Low</div>
+      <div class="ledger-content">
+        <h4>Add Asset Storage to the homepage offerings grid</h4>
+        <p>Currently only reachable from the homepage via the mega-menu; a fourth card would let a cold NPA/bank buyer self-identify without hunting.</p>
+        <span class="loc">index.html &middot; "Tailored Supply Chain Solutions"</span>
+      </div>
+    </div>
+    <div class="ledger-row">
+      <div class="ledger-sev sev-low">Low</div>
+      <div class="ledger-content">
+        <h4>Name the next step after form submission</h4>
+        <p>State what the "response within 1 business day" actually is &mdash; a call to schedule a tour, an emailed quote, etc.</p>
+        <span class="loc">faq.html &amp; all lead-modal copy</span>
+      </div>
+    </div>
+    <div class="ledger-row">
+      <div class="ledger-sev sev-low">Low</div>
+      <div class="ledger-content">
+        <h4>Swap the static map for a live embed</h4>
+        <p>Reinforces the "real physical facility" claim the About page already makes explicitly, at effectively zero cost since the correct Maps URL already exists in the footer.</p>
+        <span class="loc">faq.html &middot; .map-box</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="closing" id="verdict">
+  <h2>Final verdict, by stage</h2>
+  <p>Answering the question directly: does the site convince the audience it's talking to, or not &mdash; and where the answer is "not quite," what closes the gap.</p>
+  <div class="final-verdict">
+    <p><b>Cold, no demand yet</b> &mdash; Yes, it earns a second scroll. Real photography and concrete numbers do the credibility work a first-time visitor needs before they'll read further. The hero CTA and the "Premier" badge are pitched slightly ahead of where this visitor actually is; softening both would remove the one moment of friction in an otherwise strong opening.</p>
+  </div>
+  <div class="final-verdict" style="margin-top:1rem">
+    <p><b>Warm, comparing vendors</b> &mdash; Yes, with two specific, fixable exceptions. The service detail pages, FAQ, and no-lock-in messaging genuinely address how this buyer thinks. What costs trust at this stage is exactly the kind of thing this buyer is trained to notice: a number that doesn't match itself (6 vs. 8 cities), and proof that gets vaguer instead of stronger as they scroll (named case study &rarr; anonymized testimonials). Both are on the ledger above as High priority because this is the stage where noticing them is most damaging.</p>
+  </div>
+  <div class="final-verdict" style="margin-top:1rem">
+    <p><b>Hot, ready to book</b> &mdash; Yes. This is the strongest stage on the site. FAQ, contact form, phone, WhatsApp, and email are all one click apart, the objections that usually stall a signature (contract lock-in, security deposit) are addressed before they're raised, and the case studies read as real evidence rather than marketing copy. Naming the actual next step after submission is the only thing standing between "this looks credible" and "I know exactly what happens after I click send."</p>
+  </div>
+</div>
+
+</div>

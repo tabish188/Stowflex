@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+  <title>StowFlex Blog</title>
+  <link>https://www.stowflex.com/blog</link>
+  <description>Warehousing, 3PL logistics and e-commerce fulfillment insights from StowFlex.</description>
+  
+  <item>
+    <title>5 Ways to Cut Warehousing Costs Without Hurting Service Levels</title>
+    <link>https://www.stowflex.com/blog/5-ways-cut-warehousing-costs</link>
+    <guid>https://www.stowflex.com/blog/5-ways-cut-warehousing-costs</guid>
+    <pubDate>Thu, 08 Jan 2026 00:00:00 GMT</pubDate>
+    <description>Trying to reduce warehousing costs without slowing down fulfillment? Here are 5 practical ways growing businesses can do both.</description>
+  </item>
+  <item>
+    <title>Shared, Dedicated, Managed, or On-Demand: Which Warehousing Model Fits You?</title>
+    <link>https://www.stowflex.com/blog/choosing-warehousing-model</link>
+    <guid>https://www.stowflex.com/blog/choosing-warehousing-model</guid>
+    <pubDate>Mon, 15 Dec 2025 00:00:00 GMT</pubDate>
+    <description>The right warehousing model depends less on company size and more on how predictable — or unpredictable — your demand actually is.</description>
+  </item>
+  <item>
+    <title>The Hidden Cost of Slow Returns for D2C Brands</title>
+    <link>https://www.stowflex.com/blog/returns-reverse-logistics</link>
+    <guid>https://www.stowflex.com/blog/returns-reverse-logistics</guid>
+    <pubDate>Thu, 20 Nov 2025 00:00:00 GMT</pubDate>
+    <description>Returns are treated as an afterthought by most fulfillment operations. For fast-growing D2C brands, that's usually where the margin is quietly leaking.</description>
+  </item>
+</channel>
+</rss>
