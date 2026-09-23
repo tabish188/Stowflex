@@ -9,7 +9,7 @@
   var MIN_FILL_SECONDS = 2; // submissions faster than this are almost certainly bots
 
   var LEAD_COLUMNS = [
-    'name', 'company', 'email', 'phone', 'service', 'message', 'page_url', 'landing_page', 'referrer',
+    'name', 'company', 'email', 'phone', 'city', 'service', 'message', 'page_url', 'landing_page', 'referrer',
     'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'fbclid', 'msclkid', 'li_fat_id'
   ];
 

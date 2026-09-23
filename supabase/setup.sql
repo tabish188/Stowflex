@@ -81,6 +81,7 @@ create table if not exists public.leads (
   company      text,
   email        text,
   phone        text,
+  city         text,
   service      text,
   message      text,
   page_url     text,
@@ -97,6 +98,9 @@ create table if not exists public.leads (
   li_fat_id    text,
   created_at   timestamptz not null default now()
 );
+
+-- Safe to run even if the leads table already existed without this column.
+alter table public.leads add column if not exists city text;
 
 alter table public.leads enable row level security;
 
